@@ -37,7 +37,7 @@ const links = [
 export default function NavLinks() {
 
   const pathName = usePathname();
-
+  console.log('component NavLinks : pathname', pathName);
   return (
     <>
       {links.map((link) => {
