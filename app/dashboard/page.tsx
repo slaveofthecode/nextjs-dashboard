@@ -1,10 +1,11 @@
 // esta pagina se esta RENDERIZANDO en el SERVIDOR (por default nextjs renderiza en el servidor).
 // Por lo cual, un componente que se renderiza en el servidor puede ser ASINCRONO. 
 
-import { fetchLatestInvoices, fetchRevenue } from "../lib/data";
+import { Suspense } from "react";
 import LatestInvoices from "../ui/dashboard/latest-invoices";
 import RevenueChart from "../ui/dashboard/revenue-chart";
 import { lusitana } from "../ui/fonts";
+import { LatestInvoicesSkeleton, RevenueChartSkeleton } from "../ui/skeletons";
 
 export default async function DashboardPage () {
 
@@ -12,12 +13,16 @@ export default async function DashboardPage () {
     const data = await rest.json();
     console.log('component DashboardPage : data', data);  
 
-    const revenue = await fetchRevenue();
-    console.log('component DashboardPage : revenue', revenue); // Por default NextJs los componentes son del servidor, por el cual
+    // this part was move to RevenueChart component
+    // const revenue = await fetchRevenue();
+    // console.log('component DashboardPage : revenue', revenue); 
+    // Por default NextJs los componentes son del servidor, por el cual
     // estos console solo se veran en el server, y NO en el browser.
+    
+    // const latestInvoices = await fetchLatestInvoices();
+    // console.log('component DashboardPage : latesInvoices', latestInvoices);
+    // -----------
 
-    const latestInvoices = await fetchLatestInvoices();
-    console.log('component DashboardPage : revenue', revenue);
 
     return (
         <main>
@@ -35,8 +40,16 @@ export default async function DashboardPage () {
             /> */}
           </div>
           <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
-            <RevenueChart revenue={revenue}  />
-            <LatestInvoices latestInvoices={latestInvoices} />
+            <Suspense fallback={<RevenueChartSkeleton />} >
+                {/* <RevenueChart revenue={revenue}  /> */}
+                <RevenueChart />
+            </Suspense>
+
+            <Suspense fallback={<LatestInvoicesSkeleton />} >
+                {/* <LatestInvoices latestInvoices={latestInvoices} /> */}
+                <LatestInvoices />
+            </Suspense>
+
           </div>
         </main>
       );
